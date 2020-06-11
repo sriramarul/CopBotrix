@@ -1,0 +1,5 @@
+response = Map();
+response.put("action","reply");
+response.put("replies",{"Hey there! CopBotrix here. I'm here to help you!"});
+response.put("input",{"type":"select","options":{"Register My Complaint","Thanks. I'm ok for now"}});
+return response;

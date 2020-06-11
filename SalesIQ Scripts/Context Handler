@@ -1,0 +1,323 @@
+response = Map();
+response.put("action","context");
+if(context_id.equals("registration"))
+{
+	name = answers.get("name").get("text");
+	response.put("context_id","registration");
+	if(!answers.containsKey("email"))
+	{
+		question = {"name":"email","replies":{"...and your email address?","We will keep all your data secured"}};
+	}
+	else
+	{
+		email = answers.get("email").get("text");
+		if(!answers.containsKey("number"))
+		{
+			question = {"name":"number","replies":{"Your active Contact Number?"}};
+		}
+		else
+		{
+			number = answers.get("number").get("text");
+			response.put("context_id","registration");
+			if(!answers.containsKey("locationtype"))
+			{
+				question = {"name":"locationtype","replies":{"Sure. Please share your current location"},"input":{"type":"select","options":{"Share my location","No, let me send my address"}}};
+			}
+			else
+			{
+				locationtype = answers.get("locationtype").get("text");
+				if(locationtype.equals("Share my location"))
+				{
+					if(!answers.containsKey("location"))
+					{
+						question = {"name":"location","replies":{"Select a location"},"input":{"type":"location"}};
+					}
+					else
+					{
+						location = answers.get("location").get("text");
+						if(!answers.containKey("description"))
+						{
+							question = {"name":"description","replies":{"enter the desciption"}};
+						}
+						else
+						{
+							descrip = answers.get("description").get("text");
+							params = {"majorDimension":"ROWS","values":{{name,email}}};
+							//info params;
+							apiresponse = invokeurl
+							[
+								url :"https://sheets.googleapis.com/v4/spreadsheets/1gzy4APa_a0ovp8ZFARV6uuJXpit72Wl8jWOkHKcE94I/value/Sheet1!A1:E1:append?valueInputOption=USER_ENTERED"
+								type :POST
+								parameters:params.toString()
+								headers:{"Content-Type":"application/json"}
+								connection:"googlesheet"
+							];
+							info apiresponse;
+							response.put("action","end");
+							response.put("replies",{"Thank you for visiting us today","Have a great day"});
+						}
+					}
+				}
+				else if(locationtype.equals("No, let me send my address"))
+				{
+					if(!answers.containsKey("location"))
+					{
+						question = {"name":"location","replies":{"Sure Please share your current address"}};
+					}
+					else
+					{
+						location = answers.get("location").get("text");
+						info location;
+						if(!answers.containKey("type"))
+						{
+							/*response.put("context_id","complaint_type");
+							question = {"name":"type","replies":{"Select the type of the complaint you need to file"},"input":{"type":"select","options":{"Criminal","Civil","Others"}}};*/
+						}
+					}
+				}
+			}
+		}
+	}
+	/*response.put("action","end");
+			response.put("replies",{"Have a great day " + name});*/
+}
+/*sendmail
+		[
+			from :zoho.adminuserid
+			to :email
+			subject :"Added to VIP Program"
+			message :"Welcome to our VIP Program. Click to confirm"
+		]*/
+else if(context_id.equals("complaint_type"))
+{
+	info answers;
+	typeOfComplaint = answers.get("type").get("text");
+	response.put("context_id","complaint_type");
+	if(typeOfComplaint.equalsIgnoreCase("Criminal"))
+	{
+		info typeOfComplaint;
+		response.put("context_id","Criminal_type");
+		question = {"name":"CriminalType","replies":{"Select the type of criminal crime"},"input":{"type":"select","options":{"Chain Snatching","Stealing","Murder","Others"}}};
+	}
+	else if(typeOfComplaint.equalsIgnoreCase("Civil"))
+	{
+		info typeOfComplaint;
+		response.put("context_id","Civil_type");
+		question = {"name":"CivilType","replies":{"Select the type of civil crime"},"input":{"type":"select","options":{"Public Misconduct","Vehicle Missing","Person Missing","Others"}}};
+	}
+	else if(typeOfComplaint.equalsIgnoreCase("Others"))
+	{
+		response.put("context_id","Otherss");
+		question = {"name":"description","replies":{"Please enter your description::"}};
+	}
+}
+else if(context_id.equals("Criminal_type"))
+{
+	typeOfCriminalComplaint = answers.get("CriminalType").get("text");
+	response.put("context_id","Criminal_type");
+	if(typeOfCriminalComplaint.equalsIgnoreCase("Chain Snatching"))
+	{
+		desc = "Chain Snatching";
+		if(!answers.containsKey("description"))
+		{
+			question = {"name":"description","replies":{"Please enter your description::"}};
+		}
+		else
+		{
+			description = answers.get("description").get("text");
+			info desc + ":" + description;
+			response.put("action","end");
+			response.put("replies",{"Have a great day " + name});
+		}
+	}
+	else if(typeOfCriminalComplaint.equalsIgnoreCase("Stealing"))
+	{
+		desc = "Stealing";
+		if(!answers.containsKey("description"))
+		{
+			response.put("context_id","sheets");
+			question = {"name":"description","replies":{"Please enter your description::"}};
+		}
+		else
+		{
+			info desc + ":" + description;
+			/*response.put("action","end");
+			response.put("replies",{"Have a great day " + name});*/
+		}
+	}
+	else if(typeOfCriminalComplaint.equalsIgnoreCase("Murder"))
+	{
+		desc = "Murder";
+		if(!answers.containsKey("description"))
+		{
+			question = {"name":"description","replies":{"Please enter your description::"}};
+		}
+		else
+		{
+			description = answers.get("description").get("text");
+			info desc + ":" + description;
+			/*response.put("action","end");
+			response.put("replies",{"Have a great day " + name});*/
+		}
+	}
+	else if(typeOfCriminalComplaint.equalsIgnoreCase("Others"))
+	{
+		response.put("context_id","Otherss");
+		question = {"name":"description","replies":{"Please enter your description::"}};
+	}
+	else
+	{
+		response.put("context_id","complaint_type");
+		question = {"name":"type","replies":{"Select the type of the complaint you need to file"},"input":{"type":"select","options":{"Criminal","Civil","Others"}}};
+	}
+}
+else if(context_id.equals("Civil_type"))
+{
+	typeOfCivilComplaint = answers.get("CivilType").get("text");
+	response.put("context_id","Civil_type");
+	if(typeOfCivilComplaint.equalsIgnoreCase("Public Misconduct"))
+	{
+		desc = "Public Misconduct";
+		if(!answers.containsKey("description"))
+		{
+			question = {"name":"description","replies":{"Please enter your description::"}};
+		}
+		else
+		{
+			description = answers.get("description").get("text");
+			info desc + ":" + description;
+			/*response.put("action","end");
+			response.put("replies",{"Have a great day " + name});*/
+		}
+	}
+	else if(typeOfCivilComplaint.equalsIgnoreCase("Vehicle Missing"))
+	{
+		desc = "Vehicle Missing";
+		if(!answers.containsKey("description"))
+		{
+			question = {"name":"description","replies":{"Please enter your description::"}};
+		}
+		else
+		{
+			description = answers.get("description").get("text");
+			info desc + ":" + description;
+			/*response.put("action","end");
+			response.put("replies",{"Have a great day " + name});*/
+		}
+	}
+	else if(typeOfCivilComplaint.equalsIgnoreCase("Person Missing"))
+	{
+		desc = "Person Missing";
+		if(!answers.containsKey("description"))
+		{
+			question = {"name":"description","replies":{"Please enter your description::"}};
+		}
+		else
+		{
+			description = answers.get("description").get("text");
+			info desc + ":" + description;
+			/*response.put("action","end");
+			response.put("replies",{"Have a great day " + name});*/
+		}
+	}
+	else if(typeOfCriminalComplaint.equalsIgnoreCase("Others"))
+	{
+		response.put("context_id","Otherss");
+		question = {"name":"description","replies":{"Please enter your description::"}};
+	}
+	else
+	{
+		response.put("context_id","complaint_type");
+		question = {"name":"type","replies":{"Select the type of the complaint you need to file"},"input":{"type":"select","options":{"Criminal","Civil","Others"}}};
+	}
+}
+else if(context_id.equals("Otherss"))
+{
+	desc = "Others";
+	response.put("context_id","Otherss");
+	description = answers.get("description").get("text");
+	info desc + ":" + description;
+	/*response.put("action","end");
+			response.put("replies",{"Have a great day " + name});*/
+}
+else if(context_id.equals("sheets"))
+{
+	description = answers.get("description").get("text");
+	response.put("context_id","sheets");
+	info name;
+	info email;
+	info number;
+	info location;
+	/*//name = answers.get("name").get("text");
+				email = answers.get("email").get("text");
+				number = answers.get("number").get("text");
+				//location = answers.get("location").get("text");
+				
+				params = {"majorDimension":"ROWS","values":{{name,email,number}}};
+				apiresponse = invokeurl
+				[
+					url :"https://sheets.googleapis.com/v4/spreadsheets/1GW8q-7bVxuEelWdzxxabnj_yhdZgWe9IbzfR2Qq0Ius/values	/Sheet1!A1:E1:append?valueInputOption=USER_ENTERED"
+					type :POST
+					parameters:params.toString()
+					headers:{"Content-Type":"application/json"}
+					connection:"googlesheet3"
+				];*/
+}
+else if(context_id.equals("ignore_discount"))
+{
+	isnotified = answers.get("isnotified").get("text");
+	response.put("context_id","ignore_discount");
+	if(isnotified.equalsIgnoreCase("Nope"))
+	{
+		response.put("context_id","registration");
+		question = {"name":"name","replies":{"I just need a few more details from you to make that happen.",{"text":"For starters, what's your name?","field_name":"siq_name"}}};
+		/*if(!answers.containsKey("email"))
+		{
+			question = {"name":"email","replies":{"Great! I just need a few more details to add you to our list","To begin with, what is your email address? We will send you the promotional offers here."}};
+		}
+		else
+		{
+			email = answers.get("email").get("text");
+			if(!answers.containsKey("name"))
+			{
+				question = {"name":"name","replies":{{"text":"Thank you. What's your name?","field_name":"siq_name"}}};
+			}
+			else
+			{
+				name = answers.get("name").get("text");
+				params = {"majorDimension":"ROWS","values":{{name,email,number}}};
+				apiresponse = invokeurl
+				[
+					url :"https://sheets.googleapis.com/v4/spreadsheets/{sheetId}/values/Sheet1!A1:E1:append?valueInputOption=USER_ENTERED"
+					type :POST
+					parameters:params.toString()
+					headers:{"Content-Type":"application/json"}
+					connection:"googlesheet3"
+				];
+				if(!answers.containsKey("end"))
+				{
+					sendmail
+					[
+						from :zoho.adminuserid
+						to :email
+						subject :"SmartBot Test Email"
+						message :"Subscribe"
+					]
+					question = {"name":"end","replies":{"Thank you. We have sent you a confirmation email. Please click the button inside it to subscribe"}};
+				}
+				else
+				{
+					response.put("action","end");
+					response.put("replies",{"Have a great day " + name});
+				}
+			}
+		}*/
+	}
+	else if(isnotified.equalsIgnoreCase("Yeah"))
+	{
+		response.put("action","end");
+		response.put("replies",{"Thank you for visiting us today","Have a great day"});
+	}
+}
+response.put("questions",{question});
+return response;

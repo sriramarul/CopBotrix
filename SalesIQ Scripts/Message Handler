@@ -1,0 +1,35 @@
+response = Map();
+msg = message.get("text");
+if(operation.equals("chat"))
+{
+	if(!msg.equalsIgnoreCase("Register My Complaint") && !msg.equalsIgnoreCase("Thanks. I'm ok for now"))
+	{
+		response = Map();
+		response.put("action","reply");
+		response.put("replies",{"Hey there! CopBotrix here. I'm here to help you!"});
+		response.put("input",{"type":"select","options":{"Register My Complaint","Thanks. I'm ok for now"}});
+		return response;
+	}
+}
+if(!msg.isNull())
+{
+	response.put("action","context");
+	if(msg.equalsIgnoreCase("Register My Complaint"))
+	{
+		response.put("context_id","registration");
+		question = {"name":"name","replies":{"I just need a few more details from you to make that happen.",{"text":"What's your name?","field_name":"siq_name"}}};
+	}
+	else if("Thanks. I'm ok for now")
+	{
+		response.put("context_id","ignore_discount");
+		question = {"name":"isnotified","replies":{"Are you sure about your Choice?"},"input":{"type":"select","options":{"Yeah","Nope"}}};
+	}
+	else
+	{	response.put("action","reply");
+		response.put("replies",{"Hey there! CopBotrix here. I'm here to help you!"});
+		response.put("input",{"type":"select","options":{"Register My Complaint","Thanks. I'm ok for now"}});
+		return response;
+	}
+	response.put("questions",{question});
+}
+return response;
